@@ -34,3 +34,10 @@ export interface IApiPrice {
     buys: IApiBuys;
     sells: IApiSells;
 }
+
+export interface IApiMaterials {
+    id: number;
+    name: string;
+    items: number[];
+    order: number;
+}
