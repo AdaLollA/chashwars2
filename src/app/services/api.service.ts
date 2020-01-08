@@ -20,41 +20,50 @@ export class ApiService {
 
     public items: IItem[] = null;
 
+    private priceCache: IApiPrice[] = null;
+    private itemCache: IApiItem[] = null;
+
     constructor(private http: HttpClient) {
-        this.loadPricesWithItemData(['19704', '68', '69']).subscribe(res => {
-            console.log(res, 'DATA');
-        });
+        // todo this is testing
+        this.loadPricesWithItemData(['19704', '68', '69']);
     }
 
+    /**
+     * Loads the item information (prices and details) into the cache.
+     * @param ids The ids of which you want to receive the information on.
+     */
     public loadPricesWithItemData(ids: string[]) {
-        console.log('init');
-        return new Observable<IItem[]>(subscriber => {
-            this.getPrices(ids).subscribe(apiPrice => {
-                console.log(apiPrice, 'PRICE');
-                this.getItems(ids).subscribe(apiItems => {
-                    console.log(apiItems, 'ITEMS');
-                });
-            });
+        this.getPrices(ids).subscribe(apiPrice => {
+            this.priceCache = apiPrice;
+            this.mergeData();
+        });
+        this.getItems(ids).subscribe(apiItems => {
+            this.itemCache = apiItems;
+            this.mergeData();
         });
     }
 
-    public getPrices(ids: string[]) {
+    private mergeData(force = false) {
+        if (force || (this.priceCache && this.itemCache)) {
+            this.items = this.priceCache.map((item, id) => Object.assign({}, item, this.itemCache[id]));
+        }
+    }
+
+    /**
+     * Fetches the prices from the gw2 api.
+     * @param ids The ids of which you want to receive the price information on.
+     */
+    private getPrices(ids: string[]) {
         return this.http.get<IApiPrice[]>(`${this.url}commerce/prices?ids=${this.arrayToCsv(ids)}`);
     }
 
-    public getItems(ids: string[]) {
+    /**
+     * Fetches the item details from the gw2 api such as icons, names, etc.
+     * @param ids The ids of which you want to receive the details on.
+     */
+    private getItems(ids: string[]) {
         return this.http.get<IApiItem[]>(`${this.url}items?ids=${this.arrayToCsv(ids)}`);
     }
-
-    /*
-    map(actions => {
-                return actions.map(a => {
-                    const data = a.payload.doc.data() as TimelineObject;
-                    const id = a.payload.doc.id;
-                    return {id, ...data};
-                });
-            })
-     */
 
     /**
      * Transforms ['1','2','3'] arrays into '1,2,3' strings
@@ -67,12 +76,4 @@ export class ApiService {
         });
         return str;
     }
-
-    /*
-    searchData(title: string, type: SearchType): Observable<any> {
-      return this.http.get(`${this.url}?s=${encodeURI(title)}&type=${type}&apikey=${this.apiKey}`).pipe(
-        map(results => results['Search'])
-      );
-    }
-     */
 }

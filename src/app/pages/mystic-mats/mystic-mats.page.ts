@@ -12,6 +12,6 @@ export class MysticMatsPage {
 
   ];
 
-  constructor(private api: ApiService) {}
+  constructor(public api: ApiService) {}
 
 }

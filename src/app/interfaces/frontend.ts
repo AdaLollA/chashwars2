@@ -1,4 +1,4 @@
-import {IApiDetails, IApiPrice} from './gw2-api';
+import {IApiBuys, IApiDetails, IApiPrice, IApiSells} from './gw2-api';
 
 export interface IItem {
     name: string;
@@ -14,5 +14,7 @@ export interface IItem {
     chat_link: string;
     icon: string;
     details: IApiDetails;
-    price: IApiPrice;
+    whitelisted: boolean;
+    buys: IApiBuys;
+    sells: IApiSells;
 }
