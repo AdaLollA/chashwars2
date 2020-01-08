@@ -11,12 +11,15 @@ import {Observable} from 'rxjs';
 export class ApiService {
     // https://api.guildwars2.com/v2/items?ids=24,68
     // https://api.guildwars2.com/v2/commerce/prices?page=0&page_size=200
+
     // https://api.guildwars2.com/v2/materials/6
+    // https://wiki.guildwars2.com/wiki/Crafting_material
 
     // https://wiki.guildwars2.com/wiki/Mystic_Forge/Material_Promotion
     // https://wiki.guildwars2.com/wiki/Mystic_Forge/Material_Promotion#Cloth_Scraps
 
     private url: string = 'https://api.guildwars2.com/v2/';
+    private dustIds = [24272,24273,24274,24275,24276,24277];
 
     public items: IItem[] = null;
 
@@ -78,7 +81,7 @@ export class ApiService {
     private getMaterialIds(id = 6): Observable<number[]> {
         return this.http.get<IApiMaterials>(`${this.url}materials/${id}`).pipe(
             map(actions => {
-                return (actions as IApiMaterials).items;
+                return (actions as IApiMaterials).items.concat(this.dustIds);
             })
         );
     }
