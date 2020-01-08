@@ -8,6 +8,10 @@ import {ApiService} from '../../services/api.service';
 })
 export class MysticMatsPage {
 
+  MATERIAL_IDS = [
+
+  ];
+
   constructor(private api: ApiService) {}
 
 }

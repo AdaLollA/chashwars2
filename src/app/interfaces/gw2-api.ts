@@ -1,8 +1,8 @@
-export interface IDetails {
+export interface IApiDetails {
     type: string;
 }
 
-export interface IItem {
+export interface IApiItem {
     name: string;
     description: string;
     type: string;
@@ -15,22 +15,22 @@ export interface IItem {
     id: number;
     chat_link: string;
     icon: string;
-    details: IDetails;
+    details: IApiDetails;
 }
 
-export interface IBuys {
+export interface IApiBuys {
     quantity: number;
     unit_price: number;
 }
 
-export interface ISells {
+export interface IApiSells {
     quantity: number;
     unit_price: number;
 }
 
-export interface IPrice {
+export interface IApiPrice {
     id: number;
     whitelisted: boolean;
-    buys: IBuys;
-    sells: ISells;
+    buys: IApiBuys;
+    sells: IApiSells;
 }

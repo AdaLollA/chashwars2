@@ -1,6 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {forEach} from '@angular-devkit/schematics';
+import {map} from 'rxjs/operators';
+import {IItem} from '../interfaces/frontend';
+import {IApiItem, IApiPrice} from '../interfaces/gw2-api';
+import {Observable} from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -14,24 +18,52 @@ export class ApiService {
 
     private url: string = 'https://api.guildwars2.com/v2/';
 
+    public items: IItem[] = null;
+
     constructor(private http: HttpClient) {
-      this.getPrices(['24','68', '69']).subscribe(value => {
-        console.log(value);
-      });
+        this.loadPricesWithItemData(['19704', '68', '69']).subscribe(res => {
+            console.log(res, 'DATA');
+        });
+    }
+
+    public loadPricesWithItemData(ids: string[]) {
+        console.log('init');
+        return new Observable<IItem[]>(subscriber => {
+            this.getPrices(ids).subscribe(apiPrice => {
+                console.log(apiPrice, 'PRICE');
+                this.getItems(ids).subscribe(apiItems => {
+                    console.log(apiItems, 'ITEMS');
+                });
+            });
+        });
     }
 
     public getPrices(ids: string[]) {
-        return this.http.get(`${this.url}commerce/prices?ids=${this.arrayToCsv(ids)}`);
+        return this.http.get<IApiPrice[]>(`${this.url}commerce/prices?ids=${this.arrayToCsv(ids)}`);
     }
 
-  /**
-   * Transforms ['1','2','3'] arrays into '1,2,3' strings
-   * @param array Array that is to be converted to csv.
-   */
-  private arrayToCsv(array: string[]): string {
+    public getItems(ids: string[]) {
+        return this.http.get<IApiItem[]>(`${this.url}items?ids=${this.arrayToCsv(ids)}`);
+    }
+
+    /*
+    map(actions => {
+                return actions.map(a => {
+                    const data = a.payload.doc.data() as TimelineObject;
+                    const id = a.payload.doc.id;
+                    return {id, ...data};
+                });
+            })
+     */
+
+    /**
+     * Transforms ['1','2','3'] arrays into '1,2,3' strings
+     * @param array Array that is to be converted to csv.
+     */
+    private arrayToCsv(array: string[]): string {
         let str: string = '';
         array.forEach((value, index) => {
-            str += value + (index < array.length-1 ? ',' : '');
+            str += value + (index < array.length - 1 ? ',' : '');
         });
         return str;
     }
